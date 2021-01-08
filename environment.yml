@@ -1,0 +1,7 @@
+name: clustering
+channels:
+  - defaults
+dependencies:
+  - scikit-learn
+  - numpy 
+prefix: /home/varun/anaconda3/envs/clustering
