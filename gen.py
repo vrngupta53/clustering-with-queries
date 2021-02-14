@@ -40,28 +40,33 @@ def check_validity(X, y, n_clusters):
         max_dist_from_center = 0
         for j in range(n_samples):
             sample_dist = np.linalg.norm(centers[i] - X[j])
-            if(y[j] == i):
+            if(y[j] == i): 
                 max_dist_from_center = max(max_dist_from_center, sample_dist)
             else:
                 min_dist_from_center = min(min_dist_from_center, sample_dist)
         gamma = min(gamma, min_dist_from_center/max_dist_from_center)
+
+    #calculate cost of the given clustering
+    total_cost = 0
+    for i in range(n_samples):
+        total_cost += np.square(np.linalg.norm(X[i] - centers[y[i]]))
         
-    return gamma, centers, is_voronoi_partition
+    return gamma, centers, is_voronoi_partition, total_cost
 
 def main():
-    n_samples = 1000
-    n_clusters = 20
-    n_features = 10
-    cluster_std = 2.0
+    n_samples = 50000
+    n_clusters = 10
+    n_features = 20
+    cluster_std = 12.0
 
     while True:
-        X, y = make_blobs(n_samples=n_samples, n_features=n_features, centers=n_clusters, cluster_std=cluster_std)
-        gamma, centers, is_voronoi_partition = check_validity(X, y, n_clusters)
+        X, y = make_blobs(n_samples=n_samples, n_features=n_features, centers=n_clusters, cluster_std=cluster_std, center_box=[-50, 50])
+        gamma, centers, is_voronoi_partition, cost = check_validity(X, y, n_clusters)
         print("is_voronoi_partition = ", is_voronoi_partition, "gamma =", gamma)
 
-        if(is_voronoi_partition and 1 < gamma < 1.5):
-            np.savez("dataset/data5", X=X, y=y, k=n_clusters, g=gamma)
-            break 
+        if(is_voronoi_partition and 1 < gamma < 1.05): 
+            np.savez("dataset/data5", X=X, y=y, k=n_clusters, g=gamma, c=cost)
+            break
     
 if __name__ == "__main__":
     main()
