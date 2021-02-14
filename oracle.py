@@ -10,6 +10,7 @@ class Oracle:
         self.n_features = None
         self.n_clusters = None
         self.gamma = None
+        self.cost = None
         self.load_dataset(filename)
         
 
@@ -22,6 +23,7 @@ class Oracle:
         self.y = data['y']
         self.n_clusters = int(data['k'])
         self.gamma = float(data['g'])
+        self.cost = float(data['c'])
         self.n_samples, self.n_features = self.X.shape
 
     def get_filename(self):
@@ -41,6 +43,9 @@ class Oracle:
 
     def get_sample_points(self):
         return self.X
+
+    def get_cost(self):
+        return self.cost
 
     def are_same_cluster(self, sample1, sample2):
         return self.y[sample1] == self.y[sample2]

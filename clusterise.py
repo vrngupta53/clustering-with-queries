@@ -99,22 +99,49 @@ def binary_search(orcl, sorted_points, cluster_rep_point):
 
     return low, queries
 
+def find_cost(orcl, predicted_clustering):
+    n = orcl.get_num_samples()
+    d = orcl.get_num_features()
+    k = orcl.get_num_clusters()
+    sample_points = orcl.get_sample_points()
+
+    centers = np.zeros((k, d))
+    freq = np.zeros(k)
+
+    for i in range(n):
+        freq[predicted_clustering[i]] += 1
+        centers[predicted_clustering[i]] += sample_points[i]
+
+    centers /= freq[:,None]     #broadcast freq and divide to get centers
+
+    total_cost = 0
+    for i in range(n):
+        total_cost += np.square(np.linalg.norm(sample_points[i] - centers[predicted_clustering[i]]))
+    
+    return total_cost
+
 def main(): 
-    orcl = oracle.Oracle("data5.npz")
+    np.seterr(divide='ignore', invalid='ignore')        #ignore divide by 0 warnings
+    orcl = oracle.Oracle("data4.npz")
     print("loaded:", orcl.get_filename(), "gamma = ", orcl.get_gamma())
     num_iterations = 20
     lower_limit_eta = 1
-    step = 1
+    step = 5
     upper_limit_eta = min(int(orcl.get_num_samples()/orcl.get_num_clusters()), 50)
     for eta in range(lower_limit_eta,upper_limit_eta,step):
         success = 0
         total_queries = 0
+        total_cost = 0
         for i in range(num_iterations):
             predicted_clustering, queries = clusterise(orcl, eta)
             total_queries += queries
             if orcl.check_predicted_clustering(predicted_clustering):
                 success += 1
-        print("eta = ", eta, ", success rate:", success, "/", num_iterations, ", av. queries = ", total_queries/num_iterations)
+            total_cost += find_cost(orcl, predicted_clustering)
+        
+        average_queries = total_queries/num_iterations
+        average_cost = total_cost/num_iterations
+        print("eta = ", eta, ", success rate:", success, "/", num_iterations, "av. cost = ", average_cost, ", av. queries = ", average_queries, "av.cost/oracle_cost = ", average_cost/orcl.get_cost())
         
 
 if __name__ == "__main__" :
