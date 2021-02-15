@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 import oracle
 import listdict
 
@@ -128,6 +129,8 @@ def main():
     lower_limit_eta = 1
     step = 5
     upper_limit_eta = min(int(orcl.get_num_samples()/orcl.get_num_clusters()), 50)
+    xs = []
+    ys = []
     for eta in range(lower_limit_eta,upper_limit_eta,step):
         success = 0
         total_queries = 0
@@ -141,8 +144,16 @@ def main():
         
         average_queries = total_queries/num_iterations
         average_cost = total_cost/num_iterations
-        print("eta = ", eta, ", success rate:", success, "/", num_iterations, "av. cost = ", average_cost, ", av. queries = ", average_queries, "av.cost/oracle_cost = ", average_cost/orcl.get_cost())
-        
+        xs.append(average_queries)
+        ys.append(average_cost/orcl.get_cost())
+        print("eta = ", eta, ", success rate:", success, "/", num_iterations, "av. cost = ", average_cost, ", av. queries = ", average_queries, ", av.cost/oracle_cost = ", average_cost/orcl.get_cost())
+
+    #Plot the graph of cost relative to underlying clustering vs number of queries taken
+    plt.xlabel('num_queries')
+    plt.ylabel('predicted_cluster_cost/oracle_cluster_cost')
+    plt.ylim([0.99, 1.01])
+    plt.plot(xs, ys)
+    plt.savefig('graphs/dataset4.png')
 
 if __name__ == "__main__" :
     main()

@@ -4,4 +4,5 @@ channels:
 dependencies:
   - scikit-learn
   - numpy 
+  - matplotlib 
 prefix: /home/varun/anaconda3/envs/clustering

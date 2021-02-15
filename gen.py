@@ -64,7 +64,7 @@ def main():
         gamma, centers, is_voronoi_partition, cost = check_validity(X, y, n_clusters)
         print("is_voronoi_partition = ", is_voronoi_partition, "gamma =", gamma)
 
-        if(is_voronoi_partition and 1 < gamma < 1.05): 
+        if(is_voronoi_partition and 1 < gamma < 1.01): 
             np.savez("dataset/data5", X=X, y=y, k=n_clusters, g=gamma, c=cost)
             break
     
